@@ -5,6 +5,7 @@ Created on Oct 19, 2010
 '''
 from numpy import *
 
+
 def loadDataSet():
     postingList=[['my', 'dog', 'has', 'flea', 'problems', 'help', 'please'],
                  ['maybe', 'not', 'take', 'him', 'to', 'dog', 'park', 'stupid'],
@@ -29,12 +30,12 @@ def setOfWords2Vec(vocabList, inputSet):
         else: print "the word: %s is not in my Vocabulary!" % word
     return returnVec
 
-def trainNB0(trainMatrix,trainCategory):
+def trainNB0(trainMatrix, trainCategory, initNom = 1 , initDenom = 2.0):
     numTrainDocs = len(trainMatrix)
     numWords = len(trainMatrix[0])
     pAbusive = sum(trainCategory)/float(numTrainDocs)
-    p0Num = ones(numWords); p1Num = ones(numWords)      #change to ones() 
-    p0Denom = 2.0; p1Denom = 2.0                        #change to 2.0
+    p0Num = ones(numWords)*initNom; p1Num = ones(numWords)*initNom
+    p0Denom = initDenom; p1Denom = initDenom
     for i in range(numTrainDocs):
         if trainCategory[i] == 1:
             p1Num += trainMatrix[i]
@@ -42,9 +43,9 @@ def trainNB0(trainMatrix,trainCategory):
         else:
             p0Num += trainMatrix[i]
             p0Denom += sum(trainMatrix[i])
-    p1Vect = log(p1Num/p1Denom)          #change to log()
-    p0Vect = log(p0Num/p0Denom)          #change to log()
-    return p0Vect,p1Vect,pAbusive
+    p1Vect = log(p1Num/p1Denom)
+    p0Vect = log(p0Num/p0Denom)
+    return p0Vect, p1Vect, pAbusive
 
 def classifyNB(vec2Classify, p0Vec, p1Vec, pClass1):
     p1 = sum(vec2Classify * p1Vec) + log(pClass1)    #element-wise mult
@@ -66,13 +67,13 @@ def testingNB():
     myVocabList = createVocabList(listOPosts)
     trainMat=[]
     for postinDoc in listOPosts:
-        trainMat.append(setOfWords2Vec(myVocabList, postinDoc))
+        trainMat.append(bagOfWords2VecMN(myVocabList, postinDoc))
     p0V,p1V,pAb = trainNB0(array(trainMat),array(listClasses))
-    testEntry = ['love', 'my', 'dalmation']
-    thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
+    testEntry = ['love', 'my', 'dalmation','stupid']
+    thisDoc = array(bagOfWords2VecMN(myVocabList, testEntry))
     print testEntry,'classified as: ',classifyNB(thisDoc,p0V,p1V,pAb)
     testEntry = ['stupid', 'garbage']
-    thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
+    thisDoc = array(bagOfWords2VecMN(myVocabList, testEntry))
     print testEntry,'classified as: ',classifyNB(thisDoc,p0V,p1V,pAb)
 
 def textParse(bigString):    #input is big string, #output is word list

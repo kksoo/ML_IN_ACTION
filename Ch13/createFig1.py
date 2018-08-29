@@ -3,9 +3,8 @@ Created on Jun 1, 2011
 
 @author: Peter
 '''
-from numpy import *
-import matplotlib
 import matplotlib.pyplot as plt
+from numpy import *
 
 n = 1000 #number of points to create
 xcord0 = []
